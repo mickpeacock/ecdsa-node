@@ -20,9 +20,9 @@ app.use(express.json());
  * Address:     0xb7fe41f2052318c26761e4f7da53c620765bd3c6
  */
 const balances = {
-  "0x4aad5d2edd1fa9c00705754dee0f1c8d8e43b4c5": 100, // Address 1
-  "0xbecc0582729a9322b86e27444a8dab4665011aad": 50,  // Address 2
-  "0xb7fe41f2052318c26761e4f7da53c620765bd3c6": 75,  // Address 3
+  "02f664c31a7a628a938f0637e4a3f148793ecfa5f804cb5776a6d48acba4051e10": 100, // PK 1
+  "02d0a25ef7a2056ed8495cc3561c48d508297f8f0083537e02fc84c964e48addd4": 50,  // PK 2
+  "0399c1b14cb6b18131efeb82044b6a14cca02e00bcf96b13ebba89b8aa1e2a1df1": 75,  // PK 3
 };
 
 app.get("/balance/:address", (req, res) => {
