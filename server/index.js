@@ -32,7 +32,12 @@ app.get("/balance/:address", (req, res) => {
 });
 
 app.post("/send", (req, res) => {
-  const { sender, recipient, amount } = req.body;
+  const { sender, recipient, amount, signature } = req.body;
+  
+  console.log(`\nSender: ${sender}`);
+  console.log(`Recipient: ${recipient}`);
+  console.log(`Amount: ${amount}`);
+  console.log(`Signature: ${signature}`);
 
   setInitialBalance(sender);
   setInitialBalance(recipient);
