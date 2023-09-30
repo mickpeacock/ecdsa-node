@@ -1,4 +1,8 @@
 const express = require("express");
+const { keccak256 } = require("ethereum-cryptography/keccak");
+const secp = require("ethereum-cryptography/secp256k1");
+const { utf8ToBytes } = require("ethereum-cryptography/utils");
+
 const app = express();
 const cors = require("cors");
 const port = 3042;
@@ -32,17 +36,27 @@ app.get("/balance/:address", (req, res) => {
 });
 
 app.post("/send", (req, res) => {
-  const { sender, recipient, amount, signature } = req.body;
+  const { sender, recipient, amount, publicKey, signature } = req.body;
   
-  console.log(`\nSender: ${sender}`);
+  console.log("\nreq.body: ", JSON.stringify(req.body));
+  console.log(`Sender: ${sender}`);
   console.log(`Recipient: ${recipient}`);
   console.log(`Amount: ${amount}`);
-  console.log(`Signature: ${signature}`);
-
+  console.log(`PublicKey: ${publicKey}`);
+  console.log("Signature: ", signature);
+  
   setInitialBalance(sender);
   setInitialBalance(recipient);
 
-  if (balances[sender] < amount) {
+  // Add code here to validate signature
+  const msgHash = keccak256(utf8ToBytes(amount.toString()));
+  const pubKey = sender;
+  const isValidSignature = secp.secp256k1.verify(signature, msgHash, pubKey);
+  console.log(`isValidSignature: ${isValidSignature}`);
+  
+  if (!isValidSignature) {
+    res.status(400).send({ message: "Signature is invalid!" });
+  } else if (balances[sender] < amount) {
     res.status(400).send({ message: "Not enough funds!" });
   } else {
     balances[sender] -= amount;
