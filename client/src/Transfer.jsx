@@ -2,7 +2,6 @@ import { useState } from "react";
 import server from "./server";
 import { keccak256 } from "ethereum-cryptography/keccak";
 import { utf8ToBytes } from "ethereum-cryptography/utils";
-import { toHex } from "ethereum-cryptography/utils";
 import * as secp from "ethereum-cryptography/secp256k1";
 
 function Transfer({ address, setBalance }) {
@@ -15,14 +14,12 @@ function Transfer({ address, setBalance }) {
   async function transfer(evt) {
     evt.preventDefault();
 
-    // const signature = privateKey.slice(0,4); // TODO - Create real signature
-    // function getPublicKey(privateKey: Uint8Array, isCompressed = true): Uint8Array;
-    const hash = keccak256(utf8ToBytes(sendAmount.toString()));
+    const detailsToSign = { sender: address, amount: parseInt(sendAmount)} ;
+    console.log("Details to sign: ", detailsToSign) ;
+    const hash = keccak256(utf8ToBytes(JSON.stringify(detailsToSign)));
     const signature = secp.secp256k1.sign(hash, privateKey); //, {recovered: true});
-    console.log("Signature: ", signature);
-    console.log("Signature: ", signature.toCompactHex());
-    const publicKey = "myPublicKey";
-    const tempSignature = "TEMP";
+    console.log("Signature(object): ", signature);
+    console.log("Signature(toCompactHex): ", signature.toCompactHex());
     
     try {
       const {
@@ -30,7 +27,6 @@ function Transfer({ address, setBalance }) {
       } = await server.post(`send`, {
         sender: address,
         amount: parseInt(sendAmount),
-        publicKey: publicKey,
         signature: signature.toCompactHex(),
         recipient,
       });

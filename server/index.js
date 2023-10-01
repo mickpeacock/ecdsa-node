@@ -42,16 +42,16 @@ app.post("/send", (req, res) => {
   console.log(`Sender: ${sender}`);
   console.log(`Recipient: ${recipient}`);
   console.log(`Amount: ${amount}`);
-  console.log(`PublicKey: ${publicKey}`);
   console.log("Signature: ", signature);
   
   setInitialBalance(sender);
   setInitialBalance(recipient);
 
-  // Add code here to validate signature
-  const msgHash = keccak256(utf8ToBytes(amount.toString()));
+  const detailsToVerify = { sender: sender, amount: parseInt(amount)} ;
+  console.log("Details to verify: ", detailsToVerify);
+  const hash = keccak256(utf8ToBytes(JSON.stringify(detailsToVerify)));
   const pubKey = sender;
-  const isValidSignature = secp.secp256k1.verify(signature, msgHash, pubKey);
+  const isValidSignature = secp.secp256k1.verify(signature, hash, pubKey);
   console.log(`isValidSignature: ${isValidSignature}`);
   
   if (!isValidSignature) {
