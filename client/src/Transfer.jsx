@@ -18,6 +18,7 @@ function Transfer({ address, setBalance }) {
     console.log("Details to sign: ", detailsToSign) ;
     const hash = keccak256(utf8ToBytes(JSON.stringify(detailsToSign)));
     const signature = secp.secp256k1.sign(hash, privateKey); //, {recovered: true});
+    signature.recovery = 1;
     console.log("Signature(object): ", signature);
     console.log("Signature(toCompactHex): ", signature.toCompactHex());
     
@@ -28,6 +29,7 @@ function Transfer({ address, setBalance }) {
         sender: address,
         amount: parseInt(sendAmount),
         signature: signature.toCompactHex(),
+        // signature: { signature },
         recipient,
       });
       setBalance(balance);

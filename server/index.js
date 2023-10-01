@@ -53,15 +53,31 @@ app.post("/send", (req, res) => {
   const pubKey = sender;
   const isValidSignature = secp.secp256k1.verify(signature, hash, pubKey);
   console.log(`isValidSignature: ${isValidSignature}`);
+
+  // Task: Recover the public address from the signature
+  const sig = secp.secp256k1.Signature.fromCompact(signature);
+  sig.recovery = 1;
+  console.log("sig: ", sig);
+  const recoveredAddress = sig.recoverPublicKey(hash).toHex() //, recoveryBit);
+  console.log("recoveredAddress: ", recoveredAddress);
   
+  // if (!isValidSignature) {
+  //   res.status(400).send({ message: "Signature is invalid!" });
+  // } else if (balances[sender] < amount) {
+  //   res.status(400).send({ message: "Not enough funds!" });
+  // } else {
+  //   balances[sender] -= amount;
+  //   balances[recipient] += amount;
+  //   res.send({ balance: balances[sender] });
+  // }
   if (!isValidSignature) {
     res.status(400).send({ message: "Signature is invalid!" });
-  } else if (balances[sender] < amount) {
+  } else if (balances[recoveredAddress] < amount) {
     res.status(400).send({ message: "Not enough funds!" });
   } else {
-    balances[sender] -= amount;
+    balances[recoveredAddress] -= amount;
     balances[recipient] += amount;
-    res.send({ balance: balances[sender] });
+    res.send({ balance: balances[recoveredAddress] });
   }
 });
 
