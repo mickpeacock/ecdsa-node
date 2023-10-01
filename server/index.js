@@ -47,7 +47,7 @@ app.post("/send", (req, res) => {
   setInitialBalance(sender);
   setInitialBalance(recipient);
 
-  const detailsToVerify = { recipient: recipient, amount: parseInt(amount)} ;
+  const detailsToVerify = { sender: sender, recipient: recipient, amount: parseInt(amount)} ;
   console.log("Details to verify: ", detailsToVerify);
   const hash = keccak256(utf8ToBytes(JSON.stringify(detailsToVerify)));
   const pubKey = sender;
