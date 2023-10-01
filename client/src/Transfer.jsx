@@ -14,7 +14,7 @@ function Transfer({ address, setBalance }) {
   async function transfer(evt) {
     evt.preventDefault();
 
-    const detailsToSign = { sender: address, amount: parseInt(sendAmount)} ;
+    const detailsToSign = { recipient: recipient, amount: parseInt(sendAmount)} ;
     console.log("Details to sign: ", detailsToSign) ;
     const hash = keccak256(utf8ToBytes(JSON.stringify(detailsToSign)));
     const signature = secp.secp256k1.sign(hash, privateKey); //, {recovered: true});
