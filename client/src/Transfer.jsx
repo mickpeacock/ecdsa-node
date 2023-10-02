@@ -14,22 +14,22 @@ function Transfer({ address, setBalance }) {
   async function transfer(evt) {
     evt.preventDefault();
 
-    const detailsToSign = { sender: address, recipient: recipient, amount: parseInt(sendAmount)} ;
-    console.log("Details to sign: ", detailsToSign) ;
+    const detailsToSign = { recipient: recipient, amount: parseInt(sendAmount)} ;
     const hash = keccak256(utf8ToBytes(JSON.stringify(detailsToSign)));
     const signature = secp.secp256k1.sign(hash, privateKey); //, {recovered: true});
-    signature.recovery = 1;
-    console.log("Signature(object): ", signature);
-    console.log("Signature(toCompactHex): ", signature.toCompactHex());
+
+    // console.log("Details to sign: ", detailsToSign);
+    // console.log("hash: ", hash);
+    // console.log("Signature(object): ", signature);
+    // console.log("Signature(toCompactHex): ", signature.toCompactHex());
     
     try {
       const {
         data: { balance },
       } = await server.post(`send`, {
-        sender: address,
         amount: parseInt(sendAmount),
         signature: signature.toCompactHex(),
-        // signature: { signature },
+        recovery: signature.recovery,
         recipient,
       });
       setBalance(balance);

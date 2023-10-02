@@ -36,48 +36,32 @@ app.get("/balance/:address", (req, res) => {
 });
 
 app.post("/send", (req, res) => {
-  const { sender, recipient, amount, publicKey, signature } = req.body;
+  const { recipient, amount, signature, recovery } = req.body;
   
-  console.log("\nreq.body: ", JSON.stringify(req.body));
-  console.log(`Sender: ${sender}`);
-  console.log(`Recipient: ${recipient}`);
-  console.log(`Amount: ${amount}`);
-  console.log("Signature: ", signature);
+  // Task: Recover the public address from the signature
+  const detailsToVerify = { recipient: recipient, amount: parseInt(amount)} ;
+  const hash = keccak256(utf8ToBytes(JSON.stringify(detailsToVerify)));
+  const sig = secp.secp256k1.Signature.fromCompact(signature);
+  sig.recovery = recovery;
+  const sender = sig.recoverPublicKey(hash).toHex() //, recoveryBit);
   
   setInitialBalance(sender);
   setInitialBalance(recipient);
 
-  const detailsToVerify = { sender: sender, recipient: recipient, amount: parseInt(amount)} ;
-  console.log("Details to verify: ", detailsToVerify);
-  const hash = keccak256(utf8ToBytes(JSON.stringify(detailsToVerify)));
-  const pubKey = sender;
-  const isValidSignature = secp.secp256k1.verify(signature, hash, pubKey);
-  console.log(`isValidSignature: ${isValidSignature}`);
-
-  // Task: Recover the public address from the signature
-  const sig = secp.secp256k1.Signature.fromCompact(signature);
-  sig.recovery = 1;
-  console.log("sig: ", sig);
-  const recoveredAddress = sig.recoverPublicKey(hash).toHex() //, recoveryBit);
-  console.log("recoveredAddress: ", recoveredAddress);
+  // console.log("\nreq.body: ", JSON.stringify(req.body));
+  // console.log(`Recipient: ${recipient}`);
+  // console.log(`Amount: ${amount}`);
+  // console.log("Signature: ", signature);
+  // console.log("Details to verify: ", detailsToVerify);
+  // console.log("sig: ", sig);
+  // console.log("sender: ", sender);
   
-  // if (!isValidSignature) {
-  //   res.status(400).send({ message: "Signature is invalid!" });
-  // } else if (balances[sender] < amount) {
-  //   res.status(400).send({ message: "Not enough funds!" });
-  // } else {
-  //   balances[sender] -= amount;
-  //   balances[recipient] += amount;
-  //   res.send({ balance: balances[sender] });
-  // }
-  if (!isValidSignature) {
-    res.status(400).send({ message: "Signature is invalid!" });
-  } else if (balances[recoveredAddress] < amount) {
+  if (balances[sender] < amount) {
     res.status(400).send({ message: "Not enough funds!" });
   } else {
-    balances[recoveredAddress] -= amount;
+    balances[sender] -= amount;
     balances[recipient] += amount;
-    res.send({ balance: balances[recoveredAddress] });
+    res.send({ balance: balances[sender] });
   }
 });
 
