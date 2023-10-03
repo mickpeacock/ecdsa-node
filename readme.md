@@ -1,4 +1,6 @@
-## ECDSA Node
+# ECDSA Node
+
+## Project Description
 
 This project is an example of using a client and server to facilitate transfers between different addresses. Since there is just a single server on the back-end handling transfers, this is clearly very centralized. We won't worry about distributed consensus for this project.
 
@@ -30,7 +32,28 @@ The application should connect to the default server port (3042) automatically!
 
 _Hint_ - Use [nodemon](https://www.npmjs.com/package/nodemon) instead of `node` to automatically restart the server on any changes.
 
-##  Notes
+## Solution
+
+### Test Data
+
+Use the following information to test the application:
+
+User 1 - starts with balance of 100
+Private Key: 5a4fd4f86a7b708849f3781313148f8582736d2fbb134e50dac29abf781ffa4b
+Address:     4aad5d2edd1fa9c00705754dee0f1c8d8e43b4c5
+
+User 2 - starts with balance of 50
+Private Key: db5280138c5813a135331f37d945468e4ac7e922a46c66d40f3001c966771d92
+Address:     becc0582729a9322b86e27444a8dab4665011aad
+
+User 3 - starts with balance of 75
+Private Key: 107a5575685deb71996c09bff182656c5d539e1dcba3f4a81408e3cb1936a86a
+Address:     b7fe41f2052318c26761e4f7da53c620765bd3c6
+
+### Known Deficiencies
+
+1. The private key is used to access the wallet and to sigh the transfer
+2. Private key entry should check that the entered private key is 32 bytes
 
 ### Public key to Address
 
